@@ -25,7 +25,11 @@ class Board(MainGameClass):
         step = self.cell_size
         for row in range(self.height):
             for col in range(self.width):
-                pg.draw.rect(scr, self.color, (x + col * step, y + row * step, step, step), self.board[row][col])
+                pg.draw.circle(scr, 'white', (x + col * step + step // 2, y + row * step + step), step // 2)
+                if self.board[row][col]:
+                    pg.draw.circle(scr, 'red', (x + col * step + step // 2, y + row * step + step), step // 2 - 6)
+
+                # pg.draw.rect(scr, self.color, (x + col * step, y + row * step, step, step), self.board[row][col])
 
     def get_click(self, event: pg.event):
         coord = self.get_cell(event.pos)
