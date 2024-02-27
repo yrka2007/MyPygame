@@ -1,7 +1,7 @@
 from zipfile import ZipFile
 
 
-name = ZipFile('input.zip')
+name = ZipFile('../СР2/input.zip')
 for name in name.namelist():
     if name[-1] == '/':
         print(' ' * name.count('/') + name.split('/')[-2])
