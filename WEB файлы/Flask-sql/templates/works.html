@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Журнал работ</h1>
+{% if current_user.is_authenticated %}
+    <div>
+        <a class="btn btn-primary " href="/addjobs">Добавить</a>
+    </div>
+{% endif %}
+{% for item in works%}
+<div class="col-md6 border rounded">
+    <h2>{{item.title}}</h2>
+    <div>
+        {{item.content}}
+    </div>
+    <div>
+        Исполнитель - {{item.user.name}}, Дата [начало:{{item.created_date}}, окончание:{{item.end_date}}]
+    </div>
+</div>
+{% endfor %}
+{% endblock %}
