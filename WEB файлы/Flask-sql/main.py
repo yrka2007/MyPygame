@@ -1,116 +1,50 @@
-from flask import Flask, render_template, redirect, make_response, jsonify
-from flask_login import LoginManager, login_user, login_required, logout_user, current_user
+from flask import Flask, request, render_template
 
-from data import db_session, news_api, jobs_api
-from data.users import User
-from data.news import News
-from data.works import Works
-from forms.user import RegisterForm, LoginForm
-from forms.jobs import AddJobs
+import random
+import string
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
-login_manager = LoginManager()
-login_manager.init_app(app)
 
 
+@app.route('/')
 def main():
-    db_session.global_init("db/blogs.db")
-    app.register_blueprint(news_api.blueprint)
-    app.register_blueprint(jobs_api.blueprint)
-    app.run(debug=True)
+    return render_template('generate.html')
 
 
-@login_manager.user_loader
-def load_user(user_id):
-    db_sess = db_session.create_session()
-    return db_sess.query(User).get(user_id)
+@app.route('/genpassword', methods=['GET', 'POST'])
+def genpassword():
+    minpasslen = 8
+    maxpasslen = 30
 
+    passlen = int(request.form.get('passlen'))
 
-@app.route("/")
-def index():
-    db_sess = db_session.create_session()
-    news = db_sess.query(News).filter(News.is_private != True)
-    return render_template("index.html", news=news)
+    include_numbers = request.form.get('includenumbers')
+    include_special_chars = request.form.get('includespecialchars')
+    include_uppercase_letters = request.form.get('includeuppercaseletters')
 
+    lowercase_letters = string.ascii_lowercase
+    uppercase_letters = string.ascii_uppercase
+    digits = string.digits
+    special_chars = string.punctuation
 
-@app.route("/works")
-def works():
-    db_sess = db_session.create_session()
-    works = db_sess.query(Works)
-    return render_template("works.html", works=works)
+    print(include_numbers, include_special_chars, include_uppercase_letters)
 
+    char_sets = [lowercase_letters]
 
-@app.route('/register', methods=['GET', 'POST'])
-def reqister():
-    form = RegisterForm()
-    if form.validate_on_submit():
-        if form.password.data != form.password_again.data:
-            return render_template('register.html', title='Регистрация',
-                                   form=form,
-                                   message="Пароли не совпадают")
-        db_sess = db_session.create_session()
-        if db_sess.query(User).filter(User.email == form.email.data).first():
-            return render_template('register.html', title='Регистрация',
-                                   form=form,
-                                   message="Такой пользователь уже есть")
-        user = User(
-            name=form.name.data,
-            email=form.email.data,
-            about=form.about.data
-        )
-        user.set_password(form.password.data)
-        db_sess.add(user)
-        db_sess.commit()
-        return redirect('/login')
-    return render_template('register.html', title='Регистрация', form=form)
+    if include_numbers == 'on':
+        char_sets.append(digits)
+    if include_special_chars == 'on':
+        char_sets.append(special_chars)
+    if include_uppercase_letters == 'on':
+        char_sets.append(uppercase_letters)
 
+    all_chars = ''.join(char_sets)
 
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    form = LoginForm()
-    if form.validate_on_submit():
-        db_sess = db_session.create_session()
-        user = db_sess.query(User).filter(User.email == form.email.data).first()
-        if user and user.check_password(form.password.data):
-            login_user(user, remember=form.remember_me.data)
-            return redirect("/")
-        return render_template('login.html',
-                               message="Неправильный логин или пароль",
-                               form=form)
-    return render_template('login.html', title='Авторизация', form=form)
+    password = random.choices(all_chars, k=passlen)
+    password = ''.join(password)
 
-
-@app.route('/addjobs', methods=['GET', 'POST'])
-def addworks():
-    form = AddJobs()
-    if form.validate_on_submit():
-        db_sess = db_session.create_session()
-        work = Works()
-        work.title = form.title.data
-        work.content = form.content.data
-        work.user_id = current_user.id
-        db_sess.add(work)
-        db_sess.commit()
-        return redirect('/works')
-    return render_template('addworks.html', form=form)
-
-
-@app.route('/logout')
-@login_required
-def logout():
-    logout_user()
-    return redirect("/")
-
-@app.errorhandler(404)
-def not_found(error):
-    return make_response(jsonify({'error': 'Not found'}), 404)
-
-
-@app.errorhandler(400)
-def bad_request(_):
-    return make_response(jsonify({'error': 'Bad Request'}), 400)
+    return render_template('generate.html', generatedpassword=password)
 
 
 if __name__ == '__main__':
-    main()
+    app.run(debug=True)

@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+
+
+<body>
+
+
+<div class='mt-1 text-center'>
+    <h1 style="width: auto;margin: auto;color: white;padding: 20px;">Random Password Generator</h1>
+</div>
+
+
+{% if mess%}
+<p class="text-center" style="color: red;font-size: 20px;">{{ mess }}</p>
+{% endif %}
+
+<div class="row text-center" style="padding: 20px;margin: 20px;">
+
+    <div class="col"
+         style="border-radius: 20px;padding: 0px;background-color:rgb(201,221,123,0.5);margin:0px 10px 10px 10px;min-height: 400px;">
+        <h2 style="border-radius: 20px 20px 0px 0px;background-color: #0b4c61;color: white;padding: 10px;">Генератор
+            случайных паролей </h2>
+
+        <form action='/genpassword' method="POST" enctype="multipart/form-data">
+            <label style="font-size: 20px;"><b>Enter Password Length*</b></label>
+            <br>
+            <input type="text" id="passlen" name='passlen'
+                   style="font-size: 20px;margin-top:10px;margin-bottom:10px;" required>
+            <br>
+            <div class="container" style="width: 270px;text-align: left;">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="includenumbers" id="includenumbers"
+                           checked>
+                    <label class="form-check-label" for="flexCheckChecked">Числа</label>
+                </div>
+
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="includespecialchars"
+                           id="includespecialchars" checked>
+                    <label class="form-check-label" for="flexCheckChecked">Другие символы</label>
+                </div>
+
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="includeuppercaseletters"
+                           id="includeuppercaseletters" checked>
+                    <label class="form-check-label" for="flexCheckChecked">Заглавные буквы</label>
+                </div>
+            </div>
+            <button style="width: 232px;margin-top: 20px;font-size: 20px;" type='submit'
+                    class='btn btn-success'>Сгенерировать пароль
+            </button>
+            <br>
+        </form>
+
+        {% if generatedpassword %}
+        <div>
+            <h3 class="text-center" style="font-size: 25px;">Пароль сгенерирован:</h3>
+            <h4 class="text-center" style="font-size: 25px;"><b>{{ generatedpassword }}</b></h4>
+        </div>
+        {% endif %}
+
+    </div>
+
+
+</div>
+
+
+</body>
+
+</html>

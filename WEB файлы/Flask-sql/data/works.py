@@ -1,12 +1,11 @@
 import datetime
 import sqlalchemy
 from sqlalchemy import orm
-from sqlalchemy_serializer import SerializerMixin
 
 from .db_session import SqlAlchemyBase
 
 
-class Works(SqlAlchemyBase, SerializerMixin):
+class Works(SqlAlchemyBase):
     __tablename__ = 'works'
 
     id = sqlalchemy.Column(sqlalchemy.Integer,
